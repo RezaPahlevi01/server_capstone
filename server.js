@@ -1,131 +1,25 @@
-const express = require('express');
-const mysql = require('mysql');
+// const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const port = 3000;
 
 // Middleware
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());  // Untuk parsing JSON body request
 
-// Konfigurasi database
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'databasecapstone'
-});
+// Import endpoint dari folder /api
+const dataRoutes = require('./api/data');
+const registerRoutes = require('./api/register');
+const loginRoutes = require('./api/login');
+const loginPengepulRoutes = require('./api/loginPengepul');
 
-// Koneksi ke database
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed: ' + err.stack);
-        return;
-    }
-    console.log('Connected to database.');
-});
-
-// Endpoint untuk mendapatkan data
-app.get('/api/data', (req, res) => {
-    db.query('SELECT * FROM users', (err, results) => {
-        if (err) throw err;
-        res.json(results);
-    });
-});
-
-app.post('/api/register', (req, res) => {
-    try {
-        const { nama, email, password } = req.body;
-        
-        // Data baru tanpa enkripsi password
-        const newData = {
-            nama: nama,
-            email: email,
-            password: password  // Simpan password langsung tanpa enkripsi
-        };
-
-        db.query('INSERT INTO users SET ?', newData, (err, results) => {
-            if (err) {
-                console.error("Database insert error:", err);
-                res.status(500).json({ error: 'Failed to insert data' });
-            } else {
-                res.status(201).json({ id: results.insertId, nama: newData.nama, email: newData.email });
-            }
-        });
-    } catch (err) {
-        console.error("Error in registration:", err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-app.post('/api/login', (req, res) => {
-    const { email, password } = req.body;
-
-    // Validasi input
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email dan password harus disertakan' });
-    }
-
-    // Query database untuk menemukan pengguna berdasarkan email
-    db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-        if (err) {
-            console.error("Database query error:", err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-
-        if (results.length === 0) {
-            return res.status(401).json({ message: 'Email atau password salah' });
-        }
-
-        const user = results[0];
-
-        // Bandingkan password langsung tanpa bcrypt
-        if (password !== user.password) {
-            return res.status(401).json({ message: 'Email atau password salah' });
-        }
-
-        // Login berhasil
-        res.status(200).json({
-            message: 'Login berhasil',
-            user: { id: user.id, email: user.email }
-        });
-    });
-});
-
-app.post('/api/loginPengepul', (req, res) => {
-    const { email, password } = req.body;
-
-    // Validasi input
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email dan password harus disertakan' });
-    }
-
-    // Query database untuk menemukan pengguna berdasarkan email
-    db.query('SELECT * FROM pengepul WHERE email = ?', [email], (err, results) => {
-        if (err) {
-            console.error("Database query error:", err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-
-        if (results.length === 0) {
-            return res.status(401).json({ message: 'Email atau password salah' });
-        }
-
-        const user = results[0];
-
-        // Bandingkan password langsung tanpa bcrypt
-        if (password !== user.password) {
-            return res.status(401).json({ message: 'Email atau password salah' });
-        }
-
-        // Login berhasil
-        res.status(200).json({
-            message: 'Login berhasil',
-            user: { id: user.id, email: user.email }
-        });
-    });
-});
+// Routing
+app.use('/api/data', dataRoutes);
+app.use('/api/register', registerRoutes);
+app.use('/api/login', loginRoutes);
+app.use('/api/loginPengepul', loginPengepulRoutes);
 
 // Menjalankan server
 app.listen(port, () => {
