@@ -1,25 +1,25 @@
-const mysql = require('mysql');
+const express = require('express');
+const router = express.Router();
 
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
+module.exports = (db) => {
+    router.post('/', (req, res) => {
+        const { nama, email, password } = req.body;
+        
+        // Data baru tanpa enkripsi password
+        const newData = {
+            nama: nama,
+            email: email,
+            password: password  // Simpan password langsung tanpa enkripsi
+        };
 
-module.exports = (req, res) => {
-    const { nama, email, password } = req.body;
-
-    const newData = { nama, email, password };
-
-    db.query('INSERT INTO users SET ?', newData, (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Database insert error' });
-        }
-        res.status(201).json({
-            id: results.insertId,
-            nama: newData.nama,
-            email: newData.email
+        db.query('INSERT INTO users SET ?', newData, (err, results) => {
+            if (err) {
+                console.error("Database insert error:", err);
+                return res.status(500).json({ error: 'Failed to insert data' });
+            }
+            res.status(201).json({ id: results.insertId, nama: newData.nama, email: newData.email });
         });
     });
+
+    return router;
 };

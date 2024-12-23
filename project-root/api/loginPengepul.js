@@ -1,24 +1,40 @@
-const mysql = require('mysql');
+const express = require('express');
+const router = express.Router();
 
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
+module.exports = (db) => {
+    router.post('/', (req, res) => {
+        const { email, password } = req.body;
 
-module.exports = (req, res) => {
-    const { email, password } = req.body;
-
-    db.query('SELECT * FROM pengepul WHERE email = ?', [email], (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Database query error' });
+        // Validasi input
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email dan password harus disertakan' });
         }
 
-        if (results.length === 0 || results[0].password !== password) {
-            return res.status(401).json({ message: 'Email atau password salah' });
-        }
+        // Query database untuk menemukan pengguna berdasarkan email
+        db.query('SELECT * FROM pengepul WHERE email = ?', [email], (err, results) => {
+            if (err) {
+                console.error("Database query error:", err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
 
-        res.status(200).json({ message: 'Login berhasil', user: results[0] });
+            if (results.length === 0) {
+                return res.status(401).json({ message: 'Email atau password salah' });
+            }
+
+            const user = results[0];
+
+            // Bandingkan password langsung tanpa bcrypt
+            if (password !== user.password) {
+                return res.status(401).json({ message: 'Email atau password salah' });
+            }
+
+            // Login berhasil
+            res.status(200).json({
+                message: 'Login berhasil',
+                user: { id: user.id, email: user.email }
+            });
+        });
     });
+
+    return router;
 };

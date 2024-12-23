@@ -1,17 +1,17 @@
-const mysql = require('mysql');
+const express = require('express');
+const router = express.Router();
 
-const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-});
-
-module.exports = (req, res) => {
-    db.query('SELECT * FROM users', (err, results) => {
-        if (err) {
-            return res.status(500).json({ message: 'Database query failed' });
-        }
-        res.status(200).json(results);
+module.exports = (db) => {
+    // Endpoint untuk mendapatkan data
+    router.get('/', (req, res) => {
+        db.query('SELECT * FROM users', (err, results) => {
+            if (err) {
+                console.error('Database query error:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+            res.json(results);
+        });
     });
+
+    return router;
 };
