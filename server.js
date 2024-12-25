@@ -133,7 +133,7 @@
 // });
 
 const express = require('express');
-const mysql = require('mysql');  // Pastikan mysql di-import
+const mongoose = require('mongoose');  // Gunakan mongoose untuk koneksi MongoDB
 const cors = require('cors');
 const data = require('./project-root/api/data');
 const register = require('./project-root/api/register');
@@ -143,35 +143,33 @@ const loginPengepul = require('./project-root/api/loginPengepul');
 const app = express();
 const port = 3000;
 
-// Konfigurasi koneksi database
-const db = mysql.createConnection({
-    host: 'localhost', // Ganti dengan host database Anda jika bukan localhost
-    user: 'root',      // Ganti dengan username database Anda
-    password: '',      // Ganti dengan password database Anda
-    database: 'databasecapstone' // Ganti dengan nama database Anda
-});
-
-// Koneksi ke database
-db.connect((err) => {
-    if (err) {
-        console.error('Database connection failed: ' + err.stack);
-        return;
-    }
-    console.log('Connected to database.');
-});
+// Konfigurasi koneksi MongoDB
+const mongoUrl = 'mongodb+srv://akhmadretzasyahpahlevi:AVUJX87FwZH6ngpv@cluster0.snjfd.mongodb.net/databasecapstone?retryWrites=true&w=majority&appName=Cluster0';
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Menggunakan routing untuk setiap API
-app.use('/api/data', data(db));  // Pass db ke dalam route
-app.use('/api/register', register(db));  // Pass db ke dalam route
-app.use('/api/login', login(db));  // Pass db ke dalam route
-app.use('/api/loginPengepul', loginPengepul(db));  // Pass db ke dalam route
+// Koneksi ke MongoDB menggunakan Mongoose
+mongoose.connect(mongoUrl)
+    .then(() => {
+        console.log('Connected to MongoDB');
 
-// Menjalankan server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+        // Menjalankan server setelah koneksi berhasil
+        app.listen(port, () => {
+            console.log(`Server running at http://localhost:${port}`);
+        });
+    })
+    .catch(err => {
+        console.error('Database connection failed: ' + err.stack);
+    });
+
+// Menggunakan routing untuk setiap API
+app.use('/api/data', data);  // Pass db ke dalam route
+app.use('/api/register', register);  // Pass db ke dalam route
+app.use('/api/login', login);  // Pass db ke dalam route
+app.use('/api/loginPengepul', loginPengepul);  // Pass db ke dalam route
+
+
+
 
