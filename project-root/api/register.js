@@ -25,7 +25,7 @@
 // };
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/user'); // Model untuk koleksi user
+const User = require('../../models/User'); // Model untuk koleksi user
 
 router.post('/', async (req, res) => {
     const { email, password, nama } = req.body;

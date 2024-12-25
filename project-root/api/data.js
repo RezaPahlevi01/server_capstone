@@ -17,7 +17,7 @@
 // };
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/user'); // Pastikan path relatif benar
+const User = require('../../models/User'); // Pastikan path relatif benar
 
 // Endpoint untuk mendapatkan data
 router.get('/', async (req, res) => {

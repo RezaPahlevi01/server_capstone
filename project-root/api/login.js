@@ -40,7 +40,7 @@
 // };
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/user'); // Mengimpor model User
+const User = require('../../models/User'); // Mengimpor model User
 
 router.post('/', async (req, res) => {
     const { email, password } = req.body;
