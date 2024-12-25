@@ -135,10 +135,10 @@
 const express = require('express');
 const mysql = require('mysql');  // Pastikan mysql di-import
 const cors = require('cors');
-const data = require('./api/data');
-const register = require('./api/register');
-const login = require('./api/login');
-const loginPengepul = require('./api/loginPengepul');
+const data = require('./project-root/api/data');
+const register = require('./project-root/api/register');
+const login = require('./project-root/api/login');
+const loginPengepul = require('./project-root/api/loginPengepul');
 
 const app = express();
 const port = 3000;
