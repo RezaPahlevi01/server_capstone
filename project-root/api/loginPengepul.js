@@ -40,7 +40,7 @@
 // };
 const express = require('express');
 const router = express.Router();
-const Pengepul = require('../../models/Pengepul'); // Model untuk koleksi pengepul
+const Pengepul = require('../../models/Pengepul');
 
 router.post('/', async (req, res) => {
     const { email, password } = req.body;
@@ -51,21 +51,21 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        // Cari pengepul berdasarkan email
+        // Cari pengguna berdasarkan email
         const pengepul = await Pengepul.findOne({ email });
         if (!pengepul) {
-            return res.status(401).json({ message: 'Email atau password salah' });
+            return res.status(401).json({ message: 'Email salah' });
         }
 
-        // Bandingkan password langsung tanpa bcrypt
+        // Bandingkan password langsung (tidak disarankan di produksi)
         if (password !== pengepul.password) {
-            return res.status(401).json({ message: 'Email atau password salah' });
+            return res.status(401).json({ message: 'password salah' });
         }
 
         // Login berhasil
         res.status(200).json({
             message: 'Login berhasil',
-            user: { id: pengepul._id, email: pengepul.email, nama: pengepul.nama }
+            pengepul: { id: pengepul._id, email: pengepul.email }
         });
     } catch (err) {
         console.error('Database query error:', err);

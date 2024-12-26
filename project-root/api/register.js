@@ -25,9 +25,9 @@
 // };
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User'); // Model untuk koleksi user
+const User = require('../../models/User'); // Pastikan model User sudah ada
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
     const { email, password, nama } = req.body;
 
     // Validasi input
@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Email sudah terdaftar' });
         }
 
-        // Membuat pengguna baru
+        // Membuat pengguna baru tanpa enkripsi password
         const newUser = new User({
             email,
             password,  // Simpan password langsung tanpa enkripsi
@@ -65,5 +65,3 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
-
-
