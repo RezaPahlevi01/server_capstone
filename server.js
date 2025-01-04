@@ -17,10 +17,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Buat koneksi ke MySQL menggunakan environment variables
 const db = mysql.createConnection({
-    host: process.env.DB_HOST, // Gunakan environment variable
-    user: process.env.DB_USER, // Gunakan environment variable
-    password: process.env.DB_PASSWORD, // Gunakan environment variable
-    database: process.env.DB_NAME // Gunakan environment variable
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'databasecapstone'
 });
 
 // Cek koneksi database

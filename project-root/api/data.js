@@ -6,6 +6,7 @@ router.get('/', (req, res) => {
     const sql = 'SELECT * FROM users'; // Ganti dengan tabel Anda
     req.db.query(sql, (err, results) => {
         if (err) {
+            console.error('Database query error:', err);
             return res.status(500).json({ error: err.message });
         }
         res.json(results);
