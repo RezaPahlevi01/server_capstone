@@ -15,12 +15,12 @@ const sentimenRoutes = require('./project-root/api/sentimen');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Buat koneksi ke MySQL
+// Buat koneksi ke MySQL menggunakan environment variables
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root', // Username MySQL Anda
-    password: '', // Kosongkan jika tidak ada password
-    database: 'databasecapstone', // Nama database Anda
+    host: process.env.DB_HOST, // Gunakan environment variable
+    user: process.env.DB_USER, // Gunakan environment variable
+    password: process.env.DB_PASSWORD, // Gunakan environment variable
+    database: process.env.DB_NAME // Gunakan environment variable
 });
 
 // Cek koneksi database
@@ -49,6 +49,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to the API!');
 });
 
+// Rute-rute API
 app.use('/api/data', dataRoutes);
 app.use('/api/detail', detailRoutes);
 app.use('/api/login', loginRoutes);
@@ -58,7 +59,7 @@ app.use('/api/getUser', getUserRoutes);
 app.use('/api/sentimen', sentimenRoutes);
 
 // Jalankan server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000; // Vercel akan set PORT secara otomatis
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
