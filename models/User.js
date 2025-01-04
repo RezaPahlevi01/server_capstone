@@ -1,11 +1,20 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
 
-const userSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    nama: { type: String, required: true }
+// Definisikan model User
+const User = sequelize.define('User', {
+    nama: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
 });
-
-const User = mongoose.model('User', userSchema);
 
 module.exports = User;

@@ -1,34 +1,9 @@
-// const express = require('express');
-// const router = express.Router();
-
-// module.exports = (db) => {
-//     router.post('/', (req, res) => {
-//         const { nama, email, password } = req.body;
-        
-//         // Data baru tanpa enkripsi password
-//         const newData = {
-//             nama: nama,
-//             email: email,
-//             password: password  // Simpan password langsung tanpa enkripsi
-//         };
-
-//         db.query('INSERT INTO users SET ?', newData, (err, results) => {
-//             if (err) {
-//                 console.error("Database insert error:", err);
-//                 return res.status(500).json({ error: 'Failed to insert data' });
-//             }
-//             res.status(201).json({ id: results.insertId, nama: newData.nama, email: newData.email });
-//         });
-//     });
-
-//     return router;
-// };
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/User'); // Pastikan model User sudah ada
 
-router.post('/register', async (req, res) => {
-    const { email, password, nama } = req.body;
+// Endpoint register user
+router.post('/', async (req, res) => {
+    const { nama, email, password } = req.body;
 
     // Validasi input
     if (!email || !password || !nama) {
@@ -36,30 +11,36 @@ router.post('/register', async (req, res) => {
     }
 
     try {
-        // Mencari pengguna berdasarkan email untuk memastikan email belum terdaftar
-        const existingUser = await User.findOne({ email });
+        // Cek apakah email sudah digunakan
+        const checkEmailSql = 'SELECT * FROM users WHERE email = ?';
+        req.db.query(checkEmailSql, [email], (err, results) => {
+            if (err) {
+                console.error('Database query error:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
 
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email sudah terdaftar' });
-        }
+            // Jika email sudah terdaftar
+            if (results.length > 0) {
+                return res.status(400).json({ message: 'Email sudah terdaftar' });
+            }
 
-        // Membuat pengguna baru tanpa enkripsi password
-        const newUser = new User({
-            email,
-            password,  // Simpan password langsung tanpa enkripsi
-            nama
-        });
+            // Insert user baru ke database tanpa hashing password
+            const insertUserSql = 'INSERT INTO users (nama, email, password) VALUES (?, ?, ?)';
+            req.db.query(insertUserSql, [nama, email, password], (err, result) => {
+                if (err) {
+                    console.error('Database insertion error:', err);
+                    return res.status(500).json({ error: 'Internal server error' });
+                }
 
-        // Menyimpan pengguna ke database
-        await newUser.save();
-
-        // Menanggapi pendaftaran berhasil
-        res.status(201).json({
-            message: 'Pendaftaran berhasil',
-            user: { id: newUser._id, email: newUser.email, nama: newUser.nama }
+                // Menanggapi pendaftaran berhasil
+                res.status(201).json({
+                    message: 'Pendaftaran berhasil',
+                    user: { id: result.insertId, email, nama }
+                });
+            });
         });
     } catch (err) {
-        console.error('Pendaftaran error:', err);
+        console.error('Unexpected error:', err);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
