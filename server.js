@@ -11,6 +11,8 @@ const loginPengepulRoutes = require('./project-root/api/loginPengepul');
 const getUserRoutes = require('./project-root/api/getUser');
 const sentimenRoutes = require('./project-root/api/sentimen');
 const getSentimenRoutes = require('./project-root/api/getSentimen');
+const penjualanRoutes = require('./project-root/api/penjualan');
+const detailPenjualanRoutes = require('./project-root/api/detailPenjualan');
 
 // Middleware untuk parsing JSON
 app.use(express.json());
@@ -59,6 +61,8 @@ app.use('/api/loginPengepul', loginPengepulRoutes);
 app.use('/api/getUser', getUserRoutes);
 app.use('/api/sentimen', sentimenRoutes);
 app.use('/api/getSentimen', getSentimenRoutes);
+app.use('/api/penjualan', penjualanRoutes);
+app.use('/api/detailPenjualan', detailPenjualanRoutes);
 
 // Jalankan server
 const PORT = process.env.PORT || 3000; // Vercel akan set PORT secara otomatis

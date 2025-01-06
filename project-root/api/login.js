@@ -28,7 +28,7 @@ router.post('/', (req, res) => {
 
         const user = results[0]; // Ambil data pengguna
 
-        // Bandingkan password langsung (Belum menggunakan hashing)
+        // Bandingkan password (tanpa hashing)
         if (password !== user.password) {
             return res.status(401).json({ message: 'Email atau password salah' });
         }
