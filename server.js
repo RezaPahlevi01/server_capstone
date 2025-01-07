@@ -4,7 +4,6 @@ const app = express();
 
 // Import semua rute API
 const dataRoutes = require('./project-root/api/data');
-const detailRoutes = require('./project-root/api/detail');
 const loginRoutes = require('./project-root/api/login');
 const registerRoutes = require('./project-root/api/register');
 const loginPengepulRoutes = require('./project-root/api/loginPengepul');
@@ -54,7 +53,6 @@ app.get('/', (req, res) => {
 
 // Rute-rute API
 app.use('/api/data', dataRoutes);
-app.use('/api/detail', detailRoutes);
 app.use('/api/login', loginRoutes);
 app.use('/api/register', registerRoutes);
 app.use('/api/loginPengepul', loginPengepulRoutes);
