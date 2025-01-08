@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const app = express();
 
 // Import semua rute API
@@ -20,10 +20,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Buat koneksi ke MySQL menggunakan environment variables
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'databasecapstone'
+    host: process.env.DB_HOST || 'homelaundry.my.id',
+    user: process.env.DB_USER || 'homelaun_capstone_ulhaq',
+    password: process.env.DB_PASSWORD || 'capstone_ulhaq_1234_',
+    database: process.env.DB_NAME || 'homelaun_capstone_ulhaq'
 });
 
 // Cek koneksi database
