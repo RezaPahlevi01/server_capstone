@@ -12,20 +12,28 @@ const Penjualan = sequelize.define('Penjualan', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users', // Nama tabel yang sesuai
+      model: 'users', // Nama tabel yang sesuai
       key: 'id',
     },
   },
-  nama_barang: {
+  jenis_sampah: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  jumlah: {
-    type: DataTypes.INTEGER,
+  berat_sampah: {
+    type: DataTypes.FLOAT,
     allowNull: false,
   },
-  harga: {
-    type: DataTypes.FLOAT,
+  lokasi_pengguna: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  detail_alamat: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  bank_sampah: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 }, {

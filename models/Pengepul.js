@@ -16,6 +16,10 @@ const Pengepul = sequelize.define('Pengepul', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  Address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 }, {
   tableName: 'pengepul',
   timestamps: true, // Menggunakan timestamps (createdAt, updatedAt)
