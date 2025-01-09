@@ -1,6 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const { User } = require('../../models');
+const { User } = require('../../models');  // Sesuaikan dengan path model Anda
 const router = express.Router();
 
 // Endpoint login
@@ -24,9 +23,8 @@ router.post('/', async (req, res) => {
             return res.status(401).json({ message: 'Email atau password salah' });
         }
 
-        // Bandingkan password menggunakan bcrypt
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        // Bandingkan password langsung tanpa bcrypt
+        if (password !== user.password) {
             return res.status(401).json({ message: 'Email atau password salah' });
         }
 

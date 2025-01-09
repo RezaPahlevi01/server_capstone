@@ -1,40 +1,36 @@
+// api/sentimen.js
 const express = require('express');
+// Periksa apakah jalur impor ini sudah benar
+const Sentimen = require('../../models/Sentimen');  // Impor model dengan benar
+
+console.log(Sentimen);  // Log model Sentimen untuk memastikan
+
 const router = express.Router();
-const { Sentimen } = require('../../models');
 
-// Endpoint untuk menerima feedback dan sentimen
+// Endpoint untuk menerima feedback
 router.post('/', async (req, res) => {
-    const { email, feedback_text, tipe_sentimen } = req.body;
+    const { feedback_text, email } = req.body;
 
-    // Validasi data
-    if (!feedback_text || !tipe_sentimen) {
-        return res.status(400).json({ error: 'All fields are required!' });
-    }
-
-    // Validasi email jika diberikan
-    if (email && !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(email)) {
-        return res.status(400).json({ error: 'Invalid email format!' });
+    // Validasi input
+    if (!feedback_text) {
+        return res.status(400).json({ error: 'Feedback text is required!' });
     }
 
     try {
-        // Simpan data sentimen ke database menggunakan model Sentimen
+        // Simpan feedback ke database
         const sentimen = await Sentimen.create({
-            teks_sentimen: feedback_text,
-            tipe_sentimen: tipe_sentimen,
-            created_at: new Date(),
+            feedback_text: feedback_text,
+            email: email || null, // email bisa kosong atau null
         });
 
-        // Jika ada email, simpan juga feedback yang berhubungan dengan email (optional)
-        if (email) {
-            // Anda bisa membuat tabel lain untuk feedback yang berhubungan dengan pengguna
-            // Namun ini akan bergantung pada struktur dan kebutuhan database Anda
-        }
-
-        // Mengirimkan response jika feedback dan sentimen berhasil disimpan
-        res.status(201).json({ message: 'Feedback and Sentiment submitted successfully!' });
+        // Respons sukses
+        res.status(201).json({ message: 'Feedback successfully submitted!', sentimen });
     } catch (err) {
         console.error('Database error:', err);
-        res.status(500).json({ error: 'Database error occurred!' });
+        res.status(500).json({
+            error: 'An error occurred while saving the feedback.',
+            details: err.stack, // Stack trace error untuk informasi lebih lanjut
+        });
     }
 });
 

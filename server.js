@@ -102,6 +102,8 @@ const getSentimenRoutes = require('./project-root/api/getSentimen');
 const penjualanRoutes = require('./project-root/api/penjualan');
 const detailPenjualanRoutes = require('./project-root/api/detailPenjualan');
 const getPenjualanRoutes = require('./project-root/api/getPenjualan');
+const penjualanTerbaruRoutes = require('./project-root/api/penjualanTerbaru');
+
 
 // Rute-rute API
 app.use('/api/data', dataRoutes);
@@ -114,6 +116,7 @@ app.use('/api/getSentimen', getSentimenRoutes);
 app.use('/api/penjualan', penjualanRoutes);
 app.use('/api/detailPenjualan', detailPenjualanRoutes);
 app.use('/api/getPenjualan', getPenjualanRoutes);
+app.use('/api/penjualanTerbaru', penjualanTerbaruRoutes);
 
 // Cek koneksi database dan jalankan server
 sequelize.authenticate()

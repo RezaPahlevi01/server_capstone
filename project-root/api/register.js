@@ -1,5 +1,4 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const { User } = require('../../models');
 const router = express.Router();
 
@@ -21,14 +20,11 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Email sudah terdaftar' });
         }
 
-        // Hash password sebelum disimpan
-        const hashedPassword = await bcrypt.hash(password, 10); // 10 adalah salt rounds
-
         // Insert user baru menggunakan model User
         const newUser = await User.create({
             nama,
             email,
-            password: hashedPassword, // Gunakan hashed password
+            password, // Simpan password dalam bentuk teks biasa
         });
 
         // Menanggapi pendaftaran berhasil

@@ -22,7 +22,7 @@ const Pengepul = sequelize.define('Pengepul', {
   },
 }, {
   tableName: 'pengepul',
-  timestamps: true, // Menggunakan timestamps (createdAt, updatedAt)
+  timestamps: false, // Menggunakan timestamps (createdAt, updatedAt)
 });
 
 module.exports = { Pengepul };

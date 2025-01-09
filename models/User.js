@@ -23,7 +23,7 @@ const User = sequelize.define('User', {
   },
 }, {
     tableName: 'users', // Nama tabel di database
-    timestamps: true, // Menyertakan createdAt dan updatedAt
+    timestamps: false, // Menyertakan createdAt dan updatedAt
 });
 
 module.exports = User;
