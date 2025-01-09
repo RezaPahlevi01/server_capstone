@@ -1,4 +1,6 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const { User } = require('../../models');
 const router = express.Router();
 
 // Endpoint register user
@@ -12,32 +14,27 @@ router.post('/', async (req, res) => {
 
     try {
         // Cek apakah email sudah digunakan
-        const checkEmailSql = 'SELECT * FROM users WHERE email = ?';
-        req.db.query(checkEmailSql, [email], (err, results) => {
-            if (err) {
-                console.error('Database query error:', err);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
+        const existingUser = await User.findOne({ where: { email } });
 
-            // Jika email sudah terdaftar
-            if (results.length > 0) {
-                return res.status(400).json({ message: 'Email sudah terdaftar' });
-            }
+        // Jika email sudah terdaftar
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email sudah terdaftar' });
+        }
 
-            // Insert user baru ke database tanpa hashing password
-            const insertUserSql = 'INSERT INTO users (nama, email, password) VALUES (?, ?, ?)';
-            req.db.query(insertUserSql, [nama, email, password], (err, result) => {
-                if (err) {
-                    console.error('Database insertion error:', err);
-                    return res.status(500).json({ error: 'Internal server error' });
-                }
+        // Hash password sebelum disimpan
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 adalah salt rounds
 
-                // Menanggapi pendaftaran berhasil
-                res.status(201).json({
-                    message: 'Pendaftaran berhasil',
-                    user: { id: result.insertId, email, nama }
-                });
-            });
+        // Insert user baru menggunakan model User
+        const newUser = await User.create({
+            nama,
+            email,
+            password: hashedPassword, // Gunakan hashed password
+        });
+
+        // Menanggapi pendaftaran berhasil
+        res.status(201).json({
+            message: 'Pendaftaran berhasil',
+            user: { id: newUser.id, email: newUser.email, nama: newUser.nama },
         });
     } catch (err) {
         console.error('Unexpected error:', err);

@@ -1,5 +1,5 @@
-const User = require('./models/User');
-const Penjualan = require('./models/Penjualan');
+const User = require('./User');  // Mengimpor User dari file User.js
+const Penjualan = require('./Penjualan'); // Mengimpor model Penjualan
 
 // Relasi: 1 User bisa memiliki banyak Penjualan
 User.hasMany(Penjualan, { foreignKey: 'user_id' });

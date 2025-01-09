@@ -1,65 +1,34 @@
-// Model untuk feedback
-const Sentimen = {
-    // Menyimpan feedback ke database
-    create: (email, feedback_text) => {
-        return new Promise((resolve, reject) => {
-            const sql = 'INSERT INTO feedback (email, feedback_text, created_at) VALUES (?, ?, ?)';
-            const values = [email || null, feedback_text, new Date()];
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db'); // Sesuaikan dengan jalur koneksi database Anda
 
-            db.query(sql, values, (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
+// Mendefinisikan model Sentimen
+const Sentimen = sequelize.define('Sentimen', {
+    // Kolom ID (primary key, auto increment)
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
-
-    // Mengambil semua feedback
-    getAll: () => {
-        return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM feedback ORDER BY created_at DESC';
-            
-            db.query(sql, (err, results) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(results);
-                }
-            });
-        });
+    // Kolom teks sentimen
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false, // Tidak boleh kosong
     },
-
-    // Mengambil feedback berdasarkan ID
-    getById: (id) => {
-        return new Promise((resolve, reject) => {
-            const sql = 'SELECT * FROM feedback WHERE id = ?';
-            
-            db.query(sql, [id], (err, results) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(results[0]);
-                }
-            });
-        });
+    // Kolom tipe sentimen (positif, negatif, netral)
+    feedback_text: {
+        type: DataTypes.STRING,
+        allowNull: false, // Tidak boleh kosong
     },
-
-    // Menghapus feedback berdasarkan ID
-    delete: (id) => {
-        return new Promise((resolve, reject) => {
-            const sql = 'DELETE FROM feedback WHERE id = ?';
-            
-            db.query(sql, [id], (err, result) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(result);
-                }
-            });
-        });
-    }
-};
+    // Kolom tanggal pembuatan sentimen
+    created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW, // Menetapkan tanggal dan waktu saat data dibuat
+    },
+}, {
+    tableName: 'feedback', // Pastikan nama tabel di database sesuai
+    timestamps: true, // Sequelize akan menambahkan kolom `createdAt` dan `updatedAt` otomatis
+    createdAt: 'created_at', // Menyesuaikan nama kolom dengan yang ada di database
+    updatedAt: false, // Jika Anda tidak ingin kolom `updatedAt`, set `false`
+});
 
 module.exports = Sentimen;

@@ -1,8 +1,10 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const { User } = require('../../models');
 const router = express.Router();
 
 // Endpoint login
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     console.log('Headers:', req.headers);
     console.log('Request body:', req.body);
 
@@ -13,23 +15,18 @@ router.post('/', (req, res) => {
         return res.status(400).json({ message: 'Email dan password harus disertakan' });
     }
 
-    // Query database untuk menemukan user
-    const queryUserSql = 'SELECT * FROM users WHERE email = ?';
-    req.db.query(queryUserSql, [email], (err, results) => {
-        if (err) {
-            console.error('Database query error:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
+    try {
+        // Cari pengguna berdasarkan email menggunakan Sequelize
+        const user = await User.findOne({ where: { email } });
 
         // Jika pengguna tidak ditemukan
-        if (results.length === 0) {
+        if (!user) {
             return res.status(401).json({ message: 'Email atau password salah' });
         }
 
-        const user = results[0]; // Ambil data pengguna
-
-        // Bandingkan password (tanpa hashing)
-        if (password !== user.password) {
+        // Bandingkan password menggunakan bcrypt
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
             return res.status(401).json({ message: 'Email atau password salah' });
         }
 
@@ -38,7 +35,10 @@ router.post('/', (req, res) => {
             message: 'Login berhasil',
             user: { id: user.id, email: user.email, nama: user.nama },
         });
-    });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
 module.exports = router;

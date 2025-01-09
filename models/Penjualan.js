@@ -1,34 +1,36 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('mysql://root@localhost:3306/databasecapstone'); // Sesuaikan dengan konfigurasi DB Anda
+const sequelize = require('../db');  // Sesuaikan dengan jalur ke file db.js
 
+// Definisikan model Penjualan
 const Penjualan = sequelize.define('Penjualan', {
-    jenis_sampah: {
-      type: Sequelize.STRING,
-      allowNull: false,
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Users', // Nama tabel yang sesuai
+      key: 'id',
     },
-    berat_sampah: {
-      type: Sequelize.FLOAT,
-      allowNull: false,
-    },
-    lokasi_pengguna: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    bank_sampah: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    user_id: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Users', // Pastikan model Users sudah ada
-        key: 'id',
-      },
-    },
-  }, {
-    tableName: 'penjualan', // Sesuaikan dengan nama tabel yang ada di database
-  });
-  
-  module.exports = { Penjualan };
-  
+  },
+  nama_barang: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  jumlah: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  harga: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+}, {
+  tableName: 'penjualan', // Nama tabel di database
+  timestamps: true, // Menyertakan createdAt dan updatedAt
+});
+
+module.exports = Penjualan;

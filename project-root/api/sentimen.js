@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const { Sentimen } = require('../../models');
 
-// Endpoint untuk menerima feedback
-router.post('/', (req, res) => {
-    const { email, feedback_text } = req.body;
+// Endpoint untuk menerima feedback dan sentimen
+router.post('/', async (req, res) => {
+    const { email, feedback_text, tipe_sentimen } = req.body;
 
     // Validasi data
-    if (!feedback_text) {
+    if (!feedback_text || !tipe_sentimen) {
         return res.status(400).json({ error: 'All fields are required!' });
     }
 
@@ -15,23 +16,26 @@ router.post('/', (req, res) => {
         return res.status(400).json({ error: 'Invalid email format!' });
     }
 
-    // Query untuk memasukkan data feedback
-    const sql = 'INSERT INTO feedback SET ?';
-    const values = {
-        email: email || null, // Jika email tidak diberikan, set null
-        feedback_text: feedback_text,
-        created_at: new Date()
-    };
+    try {
+        // Simpan data sentimen ke database menggunakan model Sentimen
+        const sentimen = await Sentimen.create({
+            teks_sentimen: feedback_text,
+            tipe_sentimen: tipe_sentimen,
+            created_at: new Date(),
+        });
 
-    req.db.query(sql, values, (err, result) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error occurred!' });
+        // Jika ada email, simpan juga feedback yang berhubungan dengan email (optional)
+        if (email) {
+            // Anda bisa membuat tabel lain untuk feedback yang berhubungan dengan pengguna
+            // Namun ini akan bergantung pada struktur dan kebutuhan database Anda
         }
 
-        // Mengirimkan response jika feedback berhasil disimpan
-        res.status(201).json({ message: 'Feedback submitted successfully!' });
-    });
+        // Mengirimkan response jika feedback dan sentimen berhasil disimpan
+        res.status(201).json({ message: 'Feedback and Sentiment submitted successfully!' });
+    } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).json({ error: 'Database error occurred!' });
+    }
 });
 
 module.exports = router;

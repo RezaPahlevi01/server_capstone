@@ -1,8 +1,10 @@
 const express = require('express');
+const bcrypt = require('bcryptjs');
+const { Pengepul } = require('../../models'); // Pastikan path model pengepul benar
 const router = express.Router();
 
 // Endpoint login pengepul
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const { email, password } = req.body;
 
     // Validasi input
@@ -11,24 +13,19 @@ router.post('/', (req, res) => {
         return res.status(400).json({ message: 'Email dan password harus disertakan' });
     }
 
-    // Query untuk mencari pengepul berdasarkan email
-    const sql = 'SELECT * FROM pengepul WHERE email = ?';
-    req.db.query(sql, [email], (err, results) => {
-        if (err) {
-            console.error('Database query error:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
+    try {
+        // Cari pengepul berdasarkan email menggunakan Sequelize
+        const pengepul = await Pengepul.findOne({ where: { email } });
 
         // Periksa apakah pengepul ditemukan
-        if (results.length === 0) {
+        if (!pengepul) {
             console.warn(`Email tidak ditemukan: ${email}`);
             return res.status(401).json({ message: 'Email atau password salah' });
         }
 
-        const pengepul = results[0];
-
-        // Periksa password (pastikan untuk menggunakan hashing di lingkungan produksi)
-        if (password !== pengepul.password) {
+        // Periksa password menggunakan bcrypt
+        const isPasswordValid = await bcrypt.compare(password, pengepul.password);
+        if (!isPasswordValid) {
             console.warn(`Password salah untuk email: ${email}`);
             return res.status(401).json({ message: 'Email atau password salah' });
         }
@@ -39,7 +36,10 @@ router.post('/', (req, res) => {
             message: 'Login berhasil',
             pengepul: { id: pengepul.id, email: pengepul.email, nama: pengepul.nama },
         });
-    });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
 module.exports = router;
