@@ -1,5 +1,5 @@
 const express = require('express');
-const { Penjualan } = require('../../models/Penjualan'); // Import model Penjualan
+const { Penjualan } = require('../../models'); // Import model Penjualan
 
 const router = express.Router(); // Gunakan router
 
