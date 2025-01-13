@@ -104,6 +104,7 @@ const detailPenjualanRoutes = require('./project-root/api/detailPenjualan');
 const getPenjualanRoutes = require('./project-root/api/getPenjualan');
 const penjualanTerbaruRoutes = require('./project-root/api/penjualanTerbaru');
 const getPengepulRoutes = require('./project-root/api/getPengepul');
+const allPengepulRoutes = require('./project-root/api/allPengepul');
 
 
 // Rute-rute API
@@ -119,6 +120,7 @@ app.use('/api/detailPenjualan', detailPenjualanRoutes);
 app.use('/api/getPenjualan', getPenjualanRoutes);
 app.use('/api/penjualanTerbaru', penjualanTerbaruRoutes);
 app.use('/api/getPengepul', getPengepulRoutes);
+app.use('/api/allPengepul', allPengepulRoutes);
 
 // Cek koneksi database dan jalankan server
 sequelize.authenticate()
