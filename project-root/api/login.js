@@ -39,4 +39,45 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.put('/:id', async (req, res) => {
+    const { id } = req.params; // ID dari URL
+    const { nama, email, password } = req.body; // Data yang akan diupdate
+
+    try {
+        const user = await User.findByPk(id); // Cari pengepul berdasarkan ID
+
+        if (!user) {
+            return res.status(404).json({ message: 'Pengepul tidak ditemukan' });
+        }
+
+        // Update data pengepul
+        user.nama = nama || user.nama;
+        user.email = email || user.email;
+        user.password = password || user.password;
+
+        // Validasi email baru tidak digunakan oleh pengguna lain
+        if (email && email !== user.email) {
+            const emailExists = await user.findOne({ where: { email } });
+            if (emailExists) {
+                return res.status(400).json({ message: 'Email sudah digunakan oleh pengguna lain' });
+            }
+        }
+
+        await user.save(); // Simpan perubahan
+
+        res.status(200).json({
+            message: 'Data pengepul berhasil diperbarui',
+            pengepul: {
+                id: user.id,
+                nama: user.nama,
+                email: user.email,
+            },
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'Internal server error', error: err.message });
+    }
+});
+
+
 module.exports = router;
